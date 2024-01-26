@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<!-- saved from url=(0306)https://mygovv4-webchat.azurewebsites.net/?Token=eyJhbGciOiJIUzI1NiJ9.eyJrZXkiOiJjMDg4M2QtNmIxLTkzMi03ZjMtYTMyNTkxYjc4LTE2NjAwNDkyOTgyMzEiLCJpc3MiOiJNWUdPViIsImlhdCI6MTY2MDA0OTI5OCwiZXhwIjoxNjYwMDUwMDE4LCJzdWIiOiJ1c2VyIiwiYXV0IjoiZmFsc2UiLCJwaWQiOiJudWxsIn0.aJ20ryqyLN9ABVYy2oRs5aLQCyEHbKd7tqg7ks2fQ8U#/wea -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="X-UA-Compatible" content="ie=edge"><title>myGov</title><style>html,
+      body,
+      #webchat {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        font-size: 16px;
+        line-height: 1.5em;
+      }
+
+      #webchat p {
+        line-height: 1.5em;
+      }
+
+      #webchat button > div {
+        line-height: 1.5em;
+      }
+
+      .activityStatus.activityStatus__timestamp > span.activityStatus__timestampContent {
+        line-height: normal;
+      }
+
+      .h-100 {
+        height: 100%;
+      }
+
+      .d-none {
+        display: none;
+      }
+
+      /* Override to wrap button text in adaptive card for linked intents */
+      button.ac-pushButton div {
+        white-space: normal !important;
+        color: #2e89fc !important;
+        font-size: 16px;
+      }
+
+      /*
+      There is some customisation via custom styles for adaptive cards
+      buttons but extremely limited, this it to control the background color.
+      */
+      button.ac-pushButton {
+        background-color: white !important;
+        border-color: #777 !important;
+      }
+
+      button.ac-pushButton:hover {
+        cursor: pointer;
+      }
+
+      button.ac-pushButton:active {
+        background-color: #eee !important;
+      }
+
+      /* IE shows scrollbar on the send box textarea element by default */
+      .webchat__send-box-text-box__text-area {
+        overflow: auto;
+      }
+
+      /* configuring the borders when the send box, button is tabbed in or hovered
+        note: not working on IE 11 atm */
+      form.webchat__send-box-text-box:focus-within {
+        padding: 6px 10px 6px 6px;
+        border: 4px solid #666666;
+        border-right: 0px;
+      }
+
+      form.webchat__send-box-text-box:focus-within + div > button.webchat__icon-button {
+        box-shadow: inset 0 -4px 0 0 #666666, inset 0 4px 0 0 #666666, inset -4px 0 0 0 #666666;
+      }
+
+      /* send button styling */
+      button.webchat__icon-button {
+        font-size: inherit;
+        color: white;
+        background-color: #333333 !important;
+        min-width: 88px;
+      }
+
+      button.webchat__icon-button:focus {
+        outline: 4px solid #666666;
+        outline-offset: -4px;
+      }
+
+      button.webchat__icon-button:hover {
+        outline: 2px solid black;
+        outline-offset: 1px;
+        text-decoration: underline;
+      }
+
+      /* add a shadow around the bot & user messages  */
+      div.webchat__bubble__content {
+        box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+        overflow: visible;
+      }
+
+      /* ensure that the shadow does not get clipped */
+      div.webchat__stacked-layout .webchat__stacked-layout__content {
+        overflow: visible !important;
+      }
+
+      div.webchat__stacked-layout .webchat__stacked-layout__message {
+        overflow: visible !important;
+      }
+
+      /* send box is margined to seem like it is floating there */
+      .webchat__send-box__main {
+        margin: 15px;
+      }
+
+      /* the text input of the send box will fill the parent */
+      .webchat__send-box__main > form > input {
+        width: 100%;
+      }</style><style>.bffCardAttachment__buttonBar {
+  text-align: right;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 14px 14px 14px;
+}
+
+.bffCardAttachment__buttonBar button {
+  cursor: pointer;
+}
+
+.bffCardAttachment__buttonBar button:not(:first-child) {
+  margin-left: 4px;
+}
+.bffCardAttachment__buttonBar button {
+  border: none;
+  background: transparent;
+  font-size: 1.1rem;
+  opacity: 0.75;
+  transition: all 0.12s;
+}
+.bffCardAttachment__buttonBar button:disabled {
+  cursor: default;
+  color: grey;
+  opacity: 1;
+}
+.bffCardAttachment__buttonBar button:disabled:not([data-chosen='true']) {
+  opacity: 0.4;
+}
+.bffCardAttachment__buttonBar button:hover:not(:disabled) {
+  opacity: 1;
+  transform: scale(1.12, 1.12);
+}
+.loader {
+  font-family: var(--default-fonts);
+  position: absolute;
+  top: 50%;
+  text-align: center;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.loader-outer {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border-radius: 3px;
+  border: 4px solid var(--theme-color);
+  animation: loader 4s infinite ease;
+  -webkit-animation: loader 4s infinite ease;
+}
+
+.loader-inner {
+  vertical-align: top;
+  display: inline-block;
+  width: 100%;
+  background-color: var(--theme-color);
+  animation: loader-inner 4s infinite ease-in;
+  -webkit-animation: loader-inner 4s infinite ease-in;
+}
+
+.loader-label {
+  padding: 16px;
+  color: #333333;
+  display: block;
+  font-size: medium;
+  font-weight: lighter;
+}
+
+@-webkit-keyframes loader {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+
+  25% {
+    -webkit-transform: rotate(180deg);
+  }
+
+  50% {
+    -webkit-transform: rotate(180deg);
+  }
+
+  75% {
+    -webkit-transform: rotate(360deg);
+  }
+
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@-webkit-keyframes loader-inner {
+  0% {
+    height: 0;
+  }
+
+  25% {
+    height: 0;
+  }
+
+  50% {
+    height: 100%;
+  }
+
+  75% {
+    height: 100%;
+  }
+
+  100% {
+    height: 0;
+  }
+}
+
+@keyframes loader {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(180deg);
+  }
+
+  50% {
+    transform: rotate(180deg);
+  }
+
+  75% {
+    transform: rotate(360deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loader-inner {
+  0% {
+    height: 0;
+  }
+
+  25% {
+    height: 0;
+  }
+
+  50% {
+    height: 100%;
+  }
+
+  75% {
+    height: 100%;
+  }
+
+  100% {
+    height: 0;
+  }
+}
+.bffButtonLink {
+  display: inline-block;
+  border: none;
+  padding: 0;
+  text-decoration: underline;
+  color: blue;
+  cursor: pointer;
+  font: inherit;
+  background-color: transparent;
+}
+
+.bffButtonLink:active {
+  color: red;
+}
+</style><meta name="react-film" content="version=3.0.1"><meta name="react-scroll-to-bottom:version" content="4.1.1"><meta name="web-speech-cognitive-services" content="version=undefined"><meta name="botframework-directlinespeech:version" content="4.14.0"><meta name="botframework-webchat:bundle:variant" content="full"><meta name="botframework-webchat:bundle:version" content="4.14.0"><meta name="botframework-webchat:core:version" content="4.14.0"><meta name="botframework-webchat:ui:version" content="4.14.0"></head><body><div id="webchat" role="main"><div class="h-100"><div class="loader" style="--theme-color:#026540; --default-fonts:&quot;-apple-system&quot;, &quot;BlinkMacSystemFont&quot;, &quot;Segoe UI&quot;, &quot;Roboto&quot;, &quot;Oxygen&quot;, &quot;Ubuntu&quot;, &quot;Cantarell&quot;, &quot;Fira Sans&quot;, &quot;Droid Sans&quot;, &quot;Helvetica Neue&quot;, &quot;sans-serif&quot;;"><span class="loader-outer"><span class="loader-inner"></span></span><span class="loader-label">preparing your experience...</span></div><div class="h-100 d-none"></div></div></div><script src="./vendors_main.8221d08a72d89a078615.js.download"></script><script src="./main.edd90a1d2353255129c9.js.download"></script></body></html>
